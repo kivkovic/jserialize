@@ -13,22 +13,13 @@ exports.default = function serialize(value) {
 
     switch (value.constructor) {
 
-        case WeakMap:
-        case WeakSet:
-            return `${value.constructor.name}{}`;
-
-        case Symbol:
-            return value.toString();
-
-        case Function:
-        case RegExp:
-            return `${value.constructor.name}{${value.toString()}}`;
-
-        case Date:
-            return `Date(${Number(value)})`;
-
-        case Array:
-            return `[${value.map(entry => serialize(entry)).join(',')}]`;
+        case Symbol:   return value.toString();
+        case WeakMap:  return `WeakMap{}`;
+        case WeakSet:  return `WeakSet{}`;
+        case Function: return `Function{${value.toString()}}`;
+        case RegExp:   return `RegExp{${value.toString()}}`;
+        case Date:     return `Date(${Number(value)})`;
+        case Array:    return `[${value.map(entry => serialize(entry)).join(',')}]`;
 
         case Set:
             var inner = [];
@@ -41,12 +32,10 @@ exports.default = function serialize(value) {
             return `Map{${inner.join(',')}}`;
 
         default:
-            return `${value.constructor !== Object
-                ? `class ${value.constructor.name}`
-                : ''}{${
-                    Object.keys(value)
-                        .map(key => `${serialize(key)}:${serialize(value[key])}`)
-                        .join(',')
-                    }}`;
+            const prefix = value.constructor !== Object ? `class ${value.constructor.name}` : '';
+            return `${prefix}{${Object.keys(value)
+                .map(key => `${serialize(key)}:${serialize(value[key])}`)
+                .join(',')}}`;
+
     }
 }
