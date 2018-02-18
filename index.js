@@ -42,7 +42,6 @@ exports.default = function serialize(value) {
 
         case Error:
         case EvalError:
-        case InternalError:
         case RangeError:
         case ReferenceError:
         case SyntaxError:
