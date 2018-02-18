@@ -17,12 +17,16 @@ exports.default = function serialize(value) {
 
     switch (value.constructor) {
 
-        case Symbol:   return value.toString();
-        case WeakMap:  return 'WeakMap{}';
-        case WeakSet:  return 'WeakSet{}';
-        case Function: return 'Function{' + value.toString() + '}';
-        case RegExp:   return 'RegExp{' + value.toString() + '}';
-        case Date:     return 'Date(' + Number(value) + ')';
+        case Symbol:
+        case Function:
+        case RegExp:
+            return value.toString();
+        case WeakMap:
+            return 'new WeakMap()';
+        case WeakSet:
+            return 'new WeakSet()';
+        case Date:
+            return 'Date(' + Number(value) + ')';
 
         case Array:
             for (const entry of value) {
@@ -34,13 +38,13 @@ exports.default = function serialize(value) {
             for (const key in value) {
                 string += serialize(entry) + ',';
             }
-            return 'Set{' + string + '}';
+            return 'new Set([' + string + '])';
 
         case Map:
             for (const [key, entry] in value) {
-                string += serialize(key) + ':' + serialize(entry) + ',';
+                string += '[' + serialize(key) + ',' + serialize(entry) + ']';
             }
-            return 'Map{' + string + '}';
+            return 'new Map([' + string + '])';
 
         case Error:
         case EvalError:
@@ -49,10 +53,10 @@ exports.default = function serialize(value) {
         case SyntaxError:
         case TypeError:
         case URIError:
-            return 'Error{' + value.toString() + '}';
+            return value.name + '(' + value.message + ')';
 
         default:
-            string = value.constructor !== Object ? ('class ' + value.constructor.name) : '';
+            string = value.constructor !== Object ? ('/*class ' + value.constructor.name + '*/') : '';
             for (const key in value) {
                 string += serialize(key) + ':' + serialize(value[key]) + ',';
             }
