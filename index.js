@@ -5,7 +5,7 @@ exports.default = function serialize(value) {
     if (value === Infinity) return 'Infinity';
     if (value !== value && isNaN(value)) return 'NaN';
     if (typeof value === 'number') return value;
-    if (typeof value === 'string') return `"${value.replace('"','\\"')}"`;
+    if (typeof value === 'string') return '"' + value.replace('"','\\"') + '"';
 
     if (typeof value !== 'object'
         && typeof value !== 'function'
@@ -21,23 +21,30 @@ exports.default = function serialize(value) {
         case Function: return `Function{${value.toString()}}`;
         case RegExp:   return `RegExp{${value.toString()}}`;
         case Date:     return `Date(${Number(value)})`;
-        case Array:    return `[${value.map(entry => serialize(entry)).join(',')}]`;
+
+        case Array:
+            for (const entry of value) {
+                string += serialize(entry) + ',';
+            }
+            return '[' + string + ']';
 
         case Set:
-            var inner = [];
-            value.forEach(entry => { inner.push(serialize(entry)); });
-            return `Set{${inner.join(',')}}`;
+            for (const key in value) {
+                string += serialize(entry) + ',';
+            }
+            return 'Set{' + string + '}';
 
         case Map:
-            var inner = [];
-            value.forEach((entry, key) => { inner.push(`${serialize(key)}:${serialize(entry)}`); });
-            return `Map{${inner.join(',')}}`;
+            for (const [key, entry] in value) {
+                string += serialize(key) + ':' + serialize(entry) + ',';
+            }
+            return 'Map{' + string + '}';
 
         default:
-            const prefix = value.constructor !== Object ? `class ${value.constructor.name}` : '';
-            return `${prefix}{${Object.keys(value)
-                .map(key => `${serialize(key)}:${serialize(value[key])}`)
-                .join(',')}}`;
-
+            string = value.constructor !== Object ? ('class ' + value.constructor.name) : '';
+            for (const key in value) {
+                string += serialize(key) + ':' + serialize(value[key]) + ',';
+            }
+            return '{' + string + '}';
     }
 }
