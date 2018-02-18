@@ -4,7 +4,7 @@ class A {
     constructor(a) {
         this.a = a;
         this.b = () => a + 5;
-        this.d = new Set([1,2,3,{a: /a/i}],"aaaaa","bbbbbbb");
+        this.d = new Set([1,2,3,{a: /a/i},"aaaaa","bbbbbbb"]);
         this.e = new Map([['a',100],['b',200]]);
         this.f = new Date();
         this.g = new RegExp('ab.*c', 'gi');
