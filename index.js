@@ -35,13 +35,13 @@ exports.default = function serialize(value) {
             return '[' + string + ']';
 
         case Set:
-            for (const key in value) {
+            for (const entry of value) {
                 string += serialize(entry) + ',';
             }
             return 'new Set([' + string + '])';
 
         case Map:
-            for (const [key, entry] in value) {
+            for (const [key, entry] of value) {
                 string += '[' + serialize(key) + ',' + serialize(entry) + ']';
             }
             return 'new Map([' + string + '])';
