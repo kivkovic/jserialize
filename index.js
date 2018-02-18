@@ -16,11 +16,11 @@ exports.default = function serialize(value) {
     switch (value.constructor) {
 
         case Symbol:   return value.toString();
-        case WeakMap:  return `WeakMap{}`;
-        case WeakSet:  return `WeakSet{}`;
-        case Function: return `Function{${value.toString()}}`;
-        case RegExp:   return `RegExp{${value.toString()}}`;
-        case Date:     return `Date(${Number(value)})`;
+        case WeakMap:  return 'WeakMap{}';
+        case WeakSet:  return 'WeakSet{}';
+        case Function: return 'Function{' + value.toString() + '}';
+        case RegExp:   return 'RegExp{' + value.toString() + '}';
+        case Date:     return 'Date(' + Number(value) + ')';
 
         case Array:
             for (const entry of value) {
