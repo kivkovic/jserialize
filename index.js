@@ -40,6 +40,16 @@ exports.default = function serialize(value) {
             }
             return 'Map{' + string + '}';
 
+        case Error:
+        case EvalError:
+        case InternalError:
+        case RangeError:
+        case ReferenceError:
+        case SyntaxError:
+        case TypeError:
+        case URIError:
+            return 'Error{' + value.toString() + '}';
+
         default:
             string = value.constructor !== Object ? ('class ' + value.constructor.name) : '';
             for (const key in value) {
