@@ -67,7 +67,7 @@ class A {
 }
 
 const list = [];
-for (let i = 0; i < 100000; i++) {
+for (let i = 0; i < 10000; i++) {
     list.push(new A(i + Math.random()));
 }
 
@@ -91,3 +91,33 @@ console.log('JSON time:', +new Date - start);
 
 const first = new A(0);
 console.log(serialize(first));
+
+class Class1 {
+    constructor(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+class Class2 {
+    constructor(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+const function1 = () => 1;
+const function2 = () => 2;
+
+const a = new Class1(1, function1);
+const b = new Class1(1, function1);
+const c = new Class1(1, function2);
+const d = new Class2(1, function1);
+
+console.log(JSON.stringify(a) === JSON.stringify(b)); // true
+console.log(JSON.stringify(a) === JSON.stringify(c)); // true, same object shape
+console.log(JSON.stringify(a) === JSON.stringify(d)); // true, same object shape
+
+console.log(serialize(a) === serialize(b)); // true
+console.log(serialize(a) === serialize(c)); // false, different this.b function body
+console.log(serialize(a) === serialize(d)); // false, different class type
