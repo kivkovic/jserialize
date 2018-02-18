@@ -26,7 +26,7 @@ exports.default = function serialize(value) {
         case WeakSet:
             return 'new WeakSet()';
         case Date:
-            return 'Date(' + Number(value) + ')';
+            return 'new Date(' + Number(value) + ')';
 
         case Array:
             for (const entry of value) {
