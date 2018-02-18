@@ -2,6 +2,8 @@ exports.default = function serialize(value) {
 
     if (value === null) return 'null';
     if (value === undefined) return 'undefined';
+    if (value === Infinity) return 'Infinity';
+    if (value !== value && isNaN(value)) return 'NaN';
     if (typeof value === 'number') return value;
     if (typeof value === 'string') return `"${value.replace('"','\\"')}"`;
 
