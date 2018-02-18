@@ -13,6 +13,8 @@ exports.default = function serialize(value) {
         return '\0';
     }
 
+    let string = '';
+
     switch (value.constructor) {
 
         case Symbol:   return value.toString();
