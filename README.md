@@ -48,7 +48,7 @@ Supports various special types not handled by most serialization methods, such a
 - functions (different representations are used for arrow and for regular functions)
 - `Map` and `Set` (including their contents)
 - `WeakMap` and `WeakSet` (due to intentional internal restrictions, contents can't be serialized)
-- `Date` and `RegExp`
+- `Date`, `RegExp` and `Symbol`
 - `NaN` and `Infinity` (cast to `null` in native JSON serialization)
 - `undefined` (normally omitted from serialization)
 - Built-in `Error` types (normally serialized to empty object string)
