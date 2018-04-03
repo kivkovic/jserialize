@@ -43,7 +43,7 @@ console.log(serialize(a) === serialize(d)); // false, different class type
 
 ```
 
-Supports various special types not handled by most serialization methods, such as `JSON.stringify`, including:
+Supports various special cases not handled by most serialization methods, such as `JSON.stringify`, including:
 - Class intances - unlike with native objects, instance class name is prefixed to the serialized value
 - functions (different representations are used for arrow and for regular functions)
 - `Map` and `Set` (including their contents)
@@ -51,7 +51,8 @@ Supports various special types not handled by most serialization methods, such a
 - `Date`, `RegExp` and `Symbol`
 - `NaN` and `Infinity` (cast to `null` in native JSON serialization)
 - `undefined` (normally omitted from serialization)
-- Built-in `Error` types (normally serialized to empty object string)
+- built-in `Error` types (normally serialized to empty object string)
+- nested (recursive) object references
 
 ## API
 
