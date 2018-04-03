@@ -1,65 +1,83 @@
-exports.default = function serialize(value) {
+exports.default = function serialize(value, circularSafe = true) {
 
-    if (value === null) return 'null';
-    if (value === undefined) return 'undefined';
-    if (value === Infinity) return 'Infinity';
-    if (value !== value && isNaN(value)) return 'NaN';
-    if (typeof value === 'number') return value;
-    if (typeof value === 'string') return '"' + value.replace('"','\\"') + '"';
+    const encountered = circularSafe && typeof WeakMap === 'function' ? new WeakMap() : null;
+    let count = 0;
 
-    if (typeof value !== 'object'
-        && typeof value !== 'function'
-        && typeof value !== 'symbol') {
-        return '\0';
-    }
+    return (function recurse(value) {
 
-    let string = '';
+        if (value === null) return 'null';
+            if (value === undefined) return 'undefined';
+            if (value === Infinity) return 'Infinity';
+            if (value !== value && isNaN(value)) return 'NaN';
+            if (typeof value === 'number') return value;
+            if (typeof value === 'string') return '"' + value.replace('"','\\"') + '"';
 
-    switch (value.constructor) {
-
-        case Symbol:
-        case Function:
-        case RegExp:
-            return value.toString();
-        case WeakMap:
-            return 'new WeakMap()';
-        case WeakSet:
-            return 'new WeakSet()';
-        case Date:
-            return 'new Date(' + Number(value) + ')';
-
-        case Array:
-            for (const entry of value) {
-                string += serialize(entry) + ',';
+            if (typeof value !== 'object'
+                && typeof value !== 'function'
+                && typeof value !== 'symbol') {
+                return '\0';
             }
-            return '[' + string + ']';
 
-        case Set:
-            for (const entry of value) {
-                string += serialize(entry) + ',';
+            if (circularSafe && typeof value === 'object') {
+                count++;
+
+                if (encountered.has(value)) {
+                    return 'Circular{' + encountered.get(value) + '}';
+                }
+
+                encountered.set(value, count);
             }
-            return 'new Set([' + string + '])';
 
-        case Map:
-            for (const [key, entry] of value) {
-                string += '[' + serialize(key) + ',' + serialize(entry) + ']';
+            let string = '';
+
+            switch (value.constructor) {
+
+                case Symbol:
+                case Function:
+                case RegExp:
+                    return value.toString();
+                case WeakMap:
+                    return 'new WeakMap()';
+                case WeakSet:
+                    return 'new WeakSet()';
+                case Date:
+                    return 'new Date(' + Number(value) + ')';
+
+                case Array:
+                    for (const entry of value) {
+                        string += recurse(entry) + ',';
+                    }
+                    return '[' + string + ']';
+
+                case Set:
+                    for (const entry of value) {
+                        string += recurse(entry) + ',';
+                    }
+                    return 'new Set([' + string + '])';
+
+                case Map:
+                    for (const [key, entry] of value) {
+                        string += '[' + recurse(key) + ',' + recurse(entry) + ']';
+                    }
+                    return 'new Map([' + string + '])';
+
+                case Error:
+                case EvalError:
+                case RangeError:
+                case ReferenceError:
+                case SyntaxError:
+                case TypeError:
+                case URIError:
+                    return value.name + '(' + value.message + ')';
+
+                default:
+                    string = value.constructor !== Object ? ('/*class ' + value.constructor.name + '*/') : '';
+                    for (const key in value) {
+                        string += recurse(key) + ':' + recurse(value[key]) + ',';
+                    }
+                    return '{' + string + '}';
             }
-            return 'new Map([' + string + '])';
 
-        case Error:
-        case EvalError:
-        case RangeError:
-        case ReferenceError:
-        case SyntaxError:
-        case TypeError:
-        case URIError:
-            return value.name + '(' + value.message + ')';
+    })(value, circularSafe);
 
-        default:
-            string = value.constructor !== Object ? ('/*class ' + value.constructor.name + '*/') : '';
-            for (const key in value) {
-                string += serialize(key) + ':' + serialize(value[key]) + ',';
-            }
-            return '{' + string + '}';
-    }
 }
