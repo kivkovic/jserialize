@@ -125,3 +125,10 @@ console.log(JSON.stringify(a) === JSON.stringify(d)); // true, same object shape
 console.log(serialize(a) === serialize(b)); // true
 console.log(serialize(a) === serialize(c)); // false, different this.b function body
 console.log(serialize(a) === serialize(d)); // false, different class type
+
+const obj1 = {}, obj2 = { a: 5 }, obj3 = { b: 6 };
+obj1.d = obj2;
+obj2.e = obj3;
+obj3.f = obj1;
+
+console.log(serialize(obj1).match(/Circular\{1\}/).length === 1); // true
