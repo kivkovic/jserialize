@@ -122,13 +122,14 @@ console.log(JSON.stringify(a) === JSON.stringify(b)); // true
 console.log(JSON.stringify(a) === JSON.stringify(c)); // true, same object shape
 console.log(JSON.stringify(a) === JSON.stringify(d)); // true, same object shape
 
-console.log(serialize(a) === serialize(b)); // true
-console.log(serialize(a) === serialize(c)); // false, different this.b function body
-console.log(serialize(a) === serialize(d)); // false, different class type
+console.log(serialize(a) === serialize(b));
+console.log(serialize(a) !== serialize(c)); // different this.b function body
+console.log(serialize(a) !== serialize(d)); // different class type
 
 const obj1 = {}, obj2 = { a: 5 }, obj3 = { b: 6 };
 obj1.d = obj2;
 obj2.e = obj3;
 obj3.f = obj1;
+obj1.g = obj3;
 
-console.log(serialize(obj1).match(/Circular\{1\}/).length === 1); // true
+console.log(serialize(obj1).match(/\/\*Circular\*\/Symbol\([0-9]\)/g).length === 2); // true
