@@ -22,7 +22,7 @@ exports.default = function serialize(value, circularSafe = true, skipObjectKeySo
                 count++;
 
                 if (encountered.has(value)) {
-                    return 'Circular{' + encountered.get(value) + '}';
+                    return '/*Circular*/Symbol(' + encountered.get(value) + ')';
                 }
 
                 encountered.set(value, count);
