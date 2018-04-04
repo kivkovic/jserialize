@@ -33,6 +33,8 @@ exports.default = function serialize(value, circularSafe = true, skipObjectKeySo
             switch (value.constructor) {
 
                 case Symbol:
+                    return 'Symbol()';
+
                 case Function:
                 case RegExp:
                     return value.toString();
