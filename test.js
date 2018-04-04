@@ -132,4 +132,4 @@ obj2.e = obj3;
 obj3.f = obj1;
 obj1.g = obj3;
 
-console.log(serialize(obj1).match(/\/\*Circular\*\/Symbol\([0-9]\)/g).length === 2); // true
+console.log(serialize(obj1).match(/\/\*Circular\*\/[0-9]/g).length === 2); // true
