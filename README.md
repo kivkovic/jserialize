@@ -1,9 +1,9 @@
 # jserialize
 
-Tiny serializer for JS. Returns a compressed JSON-like string, trying to include every possible special internal JS type usually skipped by other serialization methods. The indended use is for:
-- comparing deep-value equality of objects
-- generating an object hash based on full internal state of an object
-- logging object values, including those normally skipped by `JSON.stringify`
+A tiny serializer for JS. Returns a compressed JSON-like string, trying to include every possible special internal JS type usually skipped by other serialization methods. The indended use is for:
+- comparing deep value equality of objects (including circular references)
+- generating an object hash based on the full internal state of an object
+- logging object values, including those normally skipped by `JSON.stringify` (functions, sets, maps, symbols, etc.)
 
 ## Example
 
