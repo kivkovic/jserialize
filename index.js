@@ -79,7 +79,7 @@ exports.default = function serialize(value, circularSafe = true, skipObjectKeySo
                     string = value.constructor !== Object ? ('/*class ' + value.constructor.name + '*/') : '';
 
                     for (const key of keys) {
-                        string += recurse(key) + ':' + recurse(value[key]) + ',';
+                        string += key.toString() + ':' + recurse(value[key]) + ','; // keys can be numbers, strings or symbols, per ecma-262
                     }
                     return '{' + string + '}';
             }
