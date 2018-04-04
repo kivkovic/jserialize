@@ -28,7 +28,7 @@ exports.default = function serialize(value, circularSafe = true) {
                 encountered.set(value, count);
             }
 
-            let string = '';
+            let keys, string = '';
 
             switch (value.constructor) {
 
@@ -44,16 +44,18 @@ exports.default = function serialize(value, circularSafe = true) {
                     return 'new Date(' + Number(value) + ')';
 
                 case Array:
-                    for (const entry of value) {
-                        string += recurse(entry) + ',';
-                    }
-                    return '[' + string + ']';
-
                 case Set:
-                    for (const entry of value) {
-                        string += recurse(entry) + ',';
+                    keys = Object.keys(value);
+                    if (value.constructor === Array && keys.length !== value.length) {
+                        keys.sort(); // we only need this if an array contains object properties
                     }
-                    return 'new Set([' + string + '])';
+
+                    for (const key of keys) {
+                        string += recurse(value[key]) + ',';
+                    }
+                    return value.constructor === Set
+                        ? 'new Set([' + string + '])'
+                        : '[' + string + ']';
 
                 case Map:
                     for (const [key, entry] of value) {
@@ -71,8 +73,10 @@ exports.default = function serialize(value, circularSafe = true) {
                     return value.name + '(' + value.message + ')';
 
                 default:
+                    keys = Object.keys(value).sort();
                     string = value.constructor !== Object ? ('/*class ' + value.constructor.name + '*/') : '';
-                    for (const key in value) {
+
+                    for (const key of keys) {
                         string += recurse(key) + ':' + recurse(value[key]) + ',';
                     }
                     return '{' + string + '}';
