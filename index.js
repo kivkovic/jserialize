@@ -28,7 +28,7 @@ exports.default = function serialize(value, circularSafe = true, skipObjectKeySo
                 encountered.set(value, count);
             }
 
-            let keys, string = '';
+            let keys, values, string = '';
 
             switch (value.constructor) {
 
@@ -43,23 +43,34 @@ exports.default = function serialize(value, circularSafe = true, skipObjectKeySo
                 case Date:
                     return 'new Date(' + Number(value) + ')';
 
-                case Array:
                 case Set:
+                    values = Array.from(value.values()).sort();
+                    for (let i = 0; i < values.length; i++) {
+                        string += recurse(values[i]) + (i < values.length - 1 ? ',' : '');
+                    }
+                    return 'new Set([' + string + '])';
+
+                case Array:
                     keys = Object.keys(value);
-                    if (value.constructor === Array && keys.length !== value.length) {
+                    if (keys.length !== value.length) {
                         keys.sort(); // we only need this if an array contains object properties
                     }
 
-                    for (const key of keys) {
-                        string += recurse(value[key]) + ',';
+                    for (let i = 0; i < keys.length; i++) {
+                        string += recurse(value[keys[i]]) + (i < keys.length - 1 ? ',' : '');
                     }
-                    return value.constructor === Set
-                        ? 'new Set([' + string + '])'
-                        : '[' + string + ']';
+
+                    return '[' + string + ']';
 
                 case Map:
-                    for (const [key, entry] of value) {
-                        string += '[' + recurse(key) + ',' + recurse(entry) + ']';
+                    keys = Array.from(value.keys());
+                    for (let i = 0; i < keys.length; i++) {
+                        string += '['
+                            + recurse(keys[i])
+                            + ','
+                            + recurse(value.get(keys[i]))
+                            + ']'
+                            + (i < keys.length - 1 ? ',' : '');
                     }
                     return 'new Map([' + string + '])';
 
@@ -78,8 +89,11 @@ exports.default = function serialize(value, circularSafe = true, skipObjectKeySo
 
                     string = value.constructor !== Object ? ('/*class ' + value.constructor.name + '*/') : '';
 
-                    for (const key of keys) {
-                        string += key.toString() + ':' + recurse(value[key]) + ','; // keys can be numbers, strings or symbols, per ecma-262
+                    for (let i = 0; i < keys.length; i++) {
+                        string += keys[i].toString() // keys can be numbers, strings or symbols, per ecma-262
+                            + ':'
+                            + recurse(value[keys[i]])
+                            + (i < keys.length - 1 ? ',' : '');
                     }
                     return '{' + string + '}';
             }
