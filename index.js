@@ -1,4 +1,4 @@
-exports.default = function serialize(value, circularSafe = true) {
+exports.default = function serialize(value, circularSafe = true, skipObjectKeySort = false) {
 
     const encountered = circularSafe && typeof WeakMap === 'function' ? new WeakMap() : null;
     let count = 0;
@@ -73,7 +73,9 @@ exports.default = function serialize(value, circularSafe = true) {
                     return value.name + '(' + value.message + ')';
 
                 default:
-                    keys = Object.keys(value).sort();
+                    keys = Object.keys(value);
+                    if (!skipObjectKeySort) keys.sort();
+
                     string = value.constructor !== Object ? ('/*class ' + value.constructor.name + '*/') : '';
 
                     for (const key of keys) {
